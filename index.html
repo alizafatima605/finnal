@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="2; url=https://www.youtube.com/watch?v=oR12CEx8-Xk">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://final0011.netlify.app" />
+    <meta property="og:title" content="" id="og-title" />
+    <meta property="og:description" content="" id="og-description" />
+    <meta property="og:image" content="" id="og-image" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <p>Redirecting to the website...</p>
+    <script>
+      // Extract the 'url' parameter from the URL query string
+      const urlParams = new URLSearchParams(window.location.search);
+      const postUrl = urlParams.get('url');  // This will be the WordPress post URL
+      const postId = postUrl.split('/').pop();  // Extract the post ID from the URL
+
+      // Fetch post data from the WordPress GraphQL API
+      fetch('http://alizafatime.kesug.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query {
+              post(id: "${postId}") {
+                title
+                content
+                featuredImage {
+                  node {
+                    sourceUrl
+                  }
+                }
+              }
+            }
+          `
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const post = data.data.post;
+
+        // Update the Open Graph meta tags with data from the API response
+        document.querySelector('#og-title').setAttribute('content', post.title);
+        document.querySelector('#og-description').setAttribute('content', post.content);
+        document.querySelector('#og-image').setAttribute('content', post.featuredImage.node.sourceUrl);
+
+        // Redirect to the YouTube URL after 2 seconds
+        setTimeout(() => {
+          window.location.href = "https://www.youtube.com/watch?v=oR12CEx8-Xk"; // YouTube video URL
+        }, 1000);
+      })
+      .catch(error => console.error('Error:', error));
+    </script>
+  </body>
+</html>
